@@ -23,7 +23,26 @@ budo_data = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/부도기업리
 # 데이터 확인
 budo_data.head()
 budo_data.info()
+# 확인 결과 사업자번호 클래스가 float으로 나와 integer로 변환
+budo_data['사업자번호'] = budo_data['사업자번호'].astype('Int64')
+budo_data.head()
+budo_data.info()
+#변환 완료
 
 # 정상기업리스트 import
 normal_data = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/정상기업리스트.txt", sep='\t', encoding='CP949')
 
+# 데이터 확인
+normal_data.head()
+normal_data.info()
+
+
+# 부도 정보를 raw data에 추가하여 target data 생성
+"""
+target_data = raw_data
+for name in target_data['회사명']:
+    for budo in budo_data.iterrows():
+        if name == budo:
+            target_data['budo'] = 'Y'
+            break
+"""
