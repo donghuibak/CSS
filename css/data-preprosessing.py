@@ -39,10 +39,35 @@ normal_data.info()
 
 # 부도 정보를 raw data에 추가하여 target data 생성
 """
-target_data = raw_data
+target_data = raw_data.copy()
 for name in target_data['회사명']:
-    for budo in budo_data.iterrows():
+    for budo in budo_data['회사명']:
         if name == budo:
-            target_data['budo'] = 'Y'
+            target_data.loc[target_data['회사명'] == name,'budo_date'] = budo_data.loc[budo_data['회사명'] == budo,'첫 발생'].to_string()[7:]
             break
+#또는
+target_data = pd.merge(raw_data, budo_data[['회사명','첫 발생']], on='회사명', how='left')
 """
+# 결과 학인
+"target_data.loc[target_data['budo_date'].isna() == False, ['회사명', 'budo_date']]"
+# 한 회사에만 정보가 추가됨. 회사명이 아닌 거래소코드로 결합
+
+# target_data의 거래소코드값 수정
+target_data = raw_data.copy()
+target_data['거래소코드_new'] = target_data['거래소코드'].map(lambda x: 'A' + str(x).zfill(6))
+
+# 부도 정보 추가
+target_data = pd.merge(target_data, budo_data[['거래소 코드', '발생연도']], left_on='거래소코드_new', right_on='거래소 코드', how='left')
+target_data = target_data.drop('거래소 코드', axis=1)
+target_data['발생연도'].dtypes
+# 확인 결과 발생연도가 float으로 나와 integer로 변환
+target_data['발생연도'] = target_data['발생연도'].astype('Int64')
+target_data['발생연도'].dtypes
+
+# 결과 학인
+target_data.loc[target_data['발생연도'].isna() == False, ['회사명', '발생연도']]
+# 샘플 확인
+budo_data.loc[budo_data['거래소 코드'] == 'A012030']
+# 이상 없음
+
+# 부도 발생 연도별 빈도수 확인
