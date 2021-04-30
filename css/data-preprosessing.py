@@ -65,9 +65,27 @@ target_data['발생연도'] = target_data['발생연도'].astype('Int64')
 target_data['발생연도'].dtypes
 
 # 결과 학인
-target_data.loc[target_data['발생연도'].isna() == False, ['회사명', '발생연도']]
-# 샘플 확인
-budo_data.loc[budo_data['거래소 코드'] == 'A012030']
-# 이상 없음
+target_data[target_data['발생연도'].isna() == False]
 
-# 부도 발생 연도별 빈도수 확인
+# 개수 확인
+len(target_data[target_data['발생연도'].isna() == False]['거래소코드_new'].unique())
+# 타켓 데이터의 부도 회사 390개
+
+len(budo_data['거래소 코드'].unique())
+# 부도 데이터의 부도 회사 490개
+# 100개 회사가 결합되지 않음. 결합되지 않은 회사 확인
+
+# 변수 생성
+budo_budo = budo_data['거래소 코드'].unique()
+target_budo = target_data[target_data['발생연도'].isna() == False]['거래소코드_new'].unique()
+
+# 차이 확인
+diff = list(set(budo_budo) - set(target_budo))
+diff_df = budo_data[budo_data['거래소 코드'].isin(diff)]
+# 확인 결과 3건을 제외한 97건은 SPC임.
+# 3건(한국자산신탁(주), 한국토지신탁, 에이비온) 확인 필요
+
+# 1, 2, 3년내 부도 컬럼 생성
+target_data['budo_1'] = 0
+if (pd.to_numeric(target_data['회계년도'].str[:4]) - target_data['발생연도']).any() == 0:
+    target_data['budo_1'] = 1
