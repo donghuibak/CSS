@@ -57,7 +57,8 @@ target_data = raw_data.copy()
 target_data['거래소코드_new'] = target_data['거래소코드'].map(lambda x: 'A' + str(x).zfill(6))
 
 # 부도 정보 추가
-target_data = pd.merge(target_data, budo_data[['거래소 코드', '발생연도']], left_on='거래소코드_new', right_on='거래소 코드', how='left')
+target_data = pd.merge(target_data, budo_data[['거래소 코드', '발생연도']], left_on='거래소코드_new', right_on='거래소 코드'
+                       , how='left')
 target_data = target_data.drop('거래소 코드', axis=1)
 target_data['발생연도'].dtypes
 # 확인 결과 발생연도가 float으로 나와 integer로 변환
@@ -86,6 +87,28 @@ diff_df = budo_data[budo_data['거래소 코드'].isin(diff)]
 # 3건(한국자산신탁(주), 한국토지신탁, 에이비온) 확인 필요
 
 # 1, 2, 3년내 부도 컬럼 생성
-target_data['budo_1'] = 0
-if (pd.to_numeric(target_data['회계년도'].str[:4]) - target_data['발생연도']).any() == 0:
-    target_data['budo_1'] = 1
+"""
+target_data['budo_gap'] = 0
+target_data['budo_in'] = 0
+target_data['budo_gap'] = pd.to_numeric(target_data['회계년도'].str[:4]) - target_data['발생연도']
+target_data['budo_gap'] = target_data['budo_gap'].astype('Int64')
+target_data['budo_in'] = target_data['budo_in'].astype('Int64')
+for i, row in target_data.iterrows():
+    if row['budo_gap'] == 1:
+        target_data.loc[i, 'budo_in'] = 1
+    elif row['budo_gap'] == 1:
+        target_data.loc[i, 'budo_in'] = 2
+    elif row['budo_gap'] == 2:
+        target_data.loc[i, 'budo_in'] = 3
+    else:
+        target_data.loc[i, 'budo_in'] = 0
+"""
+# 진행시 계속 에러 발생
+"""
+Traceback (most recent call last):
+  File "<input>", line 2, in <module>
+  File "pandas\_libs\missing.pyx", line 360, in pandas._libs.missing.NAType.__bool__
+TypeError: boolean value of NA is ambiguous
+"""
+# 에러 확인 결과 budo_gap을 산출하는 과정에서 데이터 타입에 오류가 생기는 것으로 판단.
+a = pd.to_numeric(target_data['회계년도'].str[:4])
