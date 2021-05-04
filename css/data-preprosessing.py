@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
 
 # raw data import
 raw_data = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/data.txt", sep='\t', encoding='CP949')
@@ -103,7 +104,7 @@ for i, row in target_data.iterrows():
     else:
         target_data.loc[i, 'budo_in'] = 0
 """
-# 진행시 계속 에러 발생
+# 진행시 에러 발생
 """
 Traceback (most recent call last):
   File "<input>", line 2, in <module>
@@ -111,4 +112,25 @@ Traceback (most recent call last):
 TypeError: boolean value of NA is ambiguous
 """
 # 에러 확인 결과 budo_gap을 산출하는 과정에서 데이터 타입에 오류가 생기는 것으로 판단.
-a = pd.to_numeric(target_data['회계년도'].str[:4])
+
+# budo_gap의 NaN 처리 진행
+target_data['budo_gap'] = pd.to_numeric(target_data['회계년도'].str[:4]) - target_data['발생연도']
+target_data['budo_gap'] = target_data['budo_gap'].fillna(-9999)
+for i, row in target_data.iterrows():
+    if row['budo_gap'] == 0:
+        target_data.loc[i, 'budo_in'] = 1
+    elif row['budo_gap'] == -1:
+        target_data.loc[i, 'budo_in'] = 2
+    elif row['budo_gap'] == -2:
+        target_data.loc[i, 'budo_in'] = 3
+    elif row['budo_gap'] > 0:
+        target_data.loc[i, 'budo_in'] = 99  # 기부도
+    else:
+        target_data.loc[i, 'budo_in'] = -9999 # 정상
+
+target_data['budo_gap'].dtype
+
+# 년도별 부도 추세 확인
+x = target_data['발생연도'].values
+y = target_data['budo_gap'].values
+plt.plot(x)
