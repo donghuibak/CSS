@@ -1,9 +1,10 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+from collections import Counter
 
 # raw data import
-raw_data = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/data.txt", sep='\t', encoding='CP949')
+raw_data = pd.read_csv("C:/Projects/10. RAW/data.txt", sep='\t', encoding='CP949')
 
 # 데이터 확인
 raw_data.head()
@@ -12,14 +13,14 @@ print(raw_data.columns.tolist())
 raw_data.shape
 
 # 코드 명세서 import
-ifrs_code = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/K-IFRS_code.txt", sep='\t', encoding='CP949')
+ifrs_code = pd.read_csv("C:/Projects/10. RAW/K-IFRS_code.txt", sep='\t', encoding='CP949')
 
 # 데이터 확인
 ifrs_code.head()
 print(ifrs_code.columns.tolist())
 
 # 부도기업리스트 import
-budo_data = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/부도기업리스트.txt", sep='\t', encoding='CP949')
+budo_data = pd.read_csv("C:/Projects/10. RAW/부도기업리스트.txt", sep='\t', encoding='CP949')
 
 # 데이터 확인
 budo_data.head()
@@ -31,7 +32,7 @@ budo_data.info()
 #변환 완료
 
 # 정상기업리스트 import
-normal_data = pd.read_csv("C:/Users/DH/Desktop/202101/Project/Data/정상기업리스트.txt", sep='\t', encoding='CP949')
+normal_data = pd.read_csv("C:/Projects/10. RAW/정상기업리스트.txt", sep='\t', encoding='CP949')
 
 # 데이터 확인
 normal_data.head()
@@ -131,6 +132,30 @@ for i, row in target_data.iterrows():
 target_data['budo_gap'].dtype
 
 # 년도별 부도 추세 확인
-x = target_data['발생연도'].values
-y = target_data['budo_gap'].values
-plt.plot(x)
+# 변수 확인
+target_data[['발생연도', 'budo_gap']]
+raw_dic = target_data.loc[((target_data['budo_in'] == 1) | (target_data['budo_in'] == 2) | (target_data['budo_in'] == 3))]
+raw_dic = raw_dic[['발생연도', 'budo_in']]
+raw_dic['budo_in'] = raw_dic['budo_in'].astype('Int64')
+
+raw_dic.plot(kind='bar', x='발생연도', y=['budo_in'== 1])
+
+plt.plot(raw_dic.발생연도, raw_dic.budo_in)
+
+
+x = raw_dic['발생연도'].values
+x = np.atleast_1d(x)
+y = raw_dic['budo_in'].values
+y = np.atleast_1d(y)
+
+raw_dic.plot.line(x='발생연도', y='budo_in')
+plt.plot(x, y)
+
+
+
+my_dict = Counter(y)
+labels, values = zip(*Counter(raw_dic).items())
+indexes = np.arange(len(labels))
+plt.bar(indexes, values, 1)
+plt.xticks(indexes + 0.5, labels)
+plt.show()
