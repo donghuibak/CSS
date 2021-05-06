@@ -134,15 +134,25 @@ target_data['budo_gap'].dtype
 # 년도별 부도 추세 확인
 # 변수 확인
 target_data[['발생연도', 'budo_gap']]
-raw_dic = target_data.loc[((target_data['budo_in'] == 1) | (target_data['budo_in'] == 2) | (target_data['budo_in'] == 3))]
+raw_dic = target_data.loc[((target_data['budo_in'] == 1) | (target_data['budo_in'] == 2) | (target_data['budo_in'] == 3)), ['발생연도', 'budo_in']].reset_index(drop=True)
+raw_dic = pd.DataFrame(raw_dic)
+year = np.array(raw_dic['발생연도'].unique()).tolist()
+future = np.array(raw_dic['budo_in'].unique()).tolist()
+plt.plot(year)
+
+for oc_yr, diff in zip(year, future):
+    raw_dic_sub =raw_dic[raw_dic['발생연도'] == oc_yr]
+    plt.plot(raw_dic_sub.발생연도, raw_dic_sub.budo_in, linewidth=diff)
+
 raw_dic = raw_dic[['발생연도', 'budo_in']]
 raw_dic['budo_in'] = raw_dic['budo_in'].astype('Int64')
 
 raw_dic.plot(kind='bar', x='발생연도', y=['budo_in'== 1])
 
 plt.plot(raw_dic.발생연도, raw_dic.budo_in)
-
-
+stack = raw_dic.stack()
+stack_df = pd.DataFrame(stack).reset_index()
+stack_df
 x = raw_dic['발생연도'].values
 x = np.atleast_1d(x)
 y = raw_dic['budo_in'].values
