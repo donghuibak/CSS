@@ -136,14 +136,23 @@ target_data['budo_gap'].dtype
 target_data[['발생연도', 'budo_gap']]
 raw_dic = target_data.loc[((target_data['budo_in'] == 1) | (target_data['budo_in'] == 2) | (target_data['budo_in'] == 3)), ['발생연도', 'budo_in']].reset_index(drop=True)
 raw_dic = pd.DataFrame(raw_dic)
+
 year = np.array(raw_dic['발생연도'].unique()).tolist()
 future = np.array(raw_dic['budo_in'].unique()).tolist()
-plt.plot(year)
 
-for oc_yr, diff in zip(year, future):
+for oc_yr, size in zip(year, future):
     raw_dic_sub =raw_dic[raw_dic['발생연도'] == oc_yr]
-    plt.plot(raw_dic_sub.발생연도, raw_dic_sub.budo_in, linewidth=diff)
+    plt.plot(list(raw_dic_sub.발생연도), list(raw_dic_sub.budo_in), linewidth=size)
+# 수십번의 values must be a 1D array 에러 해결방법: list()로 x, y 값을 처리
+# 하지만 다른 예시에서는 2D series에서도 작동되었던 것으로 보아 확인 필요
 
+
+
+
+
+test = raw_dic_sub.발생연도
+test.size
+"""
 raw_dic = raw_dic[['발생연도', 'budo_in']]
 raw_dic['budo_in'] = raw_dic['budo_in'].astype('Int64')
 
@@ -169,3 +178,4 @@ indexes = np.arange(len(labels))
 plt.bar(indexes, values, 1)
 plt.xticks(indexes + 0.5, labels)
 plt.show()
+"""
