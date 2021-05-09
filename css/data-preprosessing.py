@@ -134,11 +134,24 @@ target_data['budo_gap'].dtype
 # 년도별 부도 추세 확인
 # 변수 확인
 target_data[['발생연도', 'budo_gap']]
-raw_dic = target_data.loc[((target_data['budo_in'] == 1) | (target_data['budo_in'] == 2) | (target_data['budo_in'] == 3)), ['발생연도', 'budo_in']].reset_index(drop=True)
-raw_dic = pd.DataFrame(raw_dic)
+graph_raw = target_data.loc[((target_data['budo_in'] == 1) | (target_data['budo_in'] == 2) | (target_data['budo_in'] == 3)), ['발생연도', 'budo_in']].reset_index(drop=True)
+graph_df = pd.DataFrame(data={'d1': [0], 'd2': [0], 'd3': [0]}, index=sorted(graph_raw['발생연도'].unique()))
+a = 1
+for column in graph_df.items():
+    for i in graph_df.iterrows():
+        print(i)
+
+for i, row in graph_df.iterrows():
+    if i == graph_raw.loc[0, '발생연도']:
+        if graph_raw['budo_in'] == 1:
+            row = 1
+
+    print(row)
+
+graph_raw.loc[:,'발생연도']
 
 year = np.array(raw_dic['발생연도'].unique()).tolist()
-future = np.array(raw_dic['budo_in'].unique()).tolist()
+future = np.array(raw_dic['budo_in'].unique()).astype('int8').tolist()
 
 for oc_yr, size in zip(year, future):
     raw_dic_sub =raw_dic[raw_dic['발생연도'] == oc_yr]
@@ -147,11 +160,10 @@ for oc_yr, size in zip(year, future):
 # 하지만 다른 예시에서는 2D series에서도 작동되었던 것으로 보아 확인 필요
 
 
+for i in graph_df.iteritems():
+    print(i)
 
 
-
-test = raw_dic_sub.발생연도
-test.size
 """
 raw_dic = raw_dic[['발생연도', 'budo_in']]
 raw_dic['budo_in'] = raw_dic['budo_in'].astype('Int64')
